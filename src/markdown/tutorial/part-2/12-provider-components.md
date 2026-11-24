@@ -163,7 +163,6 @@ module('Integration | Component | rentals', function (hooks) {
           lng: -122.4194,
         },
         category: 'Estate',
-        type: 'Standalone',
         bedrooms: 15,
         image:
           'https://upload.wikimedia.org/wikipedia/commons/c/cb/Crane_estate_(5).jpg',
@@ -180,7 +179,6 @@ module('Integration | Component | rentals', function (hooks) {
           lng: -122.3321,
         },
         category: 'Condo',
-        type: 'Community',
         bedrooms: 1,
         image:
           'https://upload.wikimedia.org/wikipedia/commons/2/20/Seattle_-_Barnes_and_Bell_Buildings.jpg',
@@ -197,7 +195,6 @@ module('Integration | Component | rentals', function (hooks) {
           lng: -122.6801,
         },
         category: 'Apartment',
-        type: 'Community',
         bedrooms: 3,
         image:
           'https://upload.wikimedia.org/wikipedia/commons/f/f7/Wheeldon_Apartment_Building_-_Portland_Oregon.jpg',

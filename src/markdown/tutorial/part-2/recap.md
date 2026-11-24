@@ -17,13 +17,14 @@ There was a lot of concepts to cover in part two. To recap, here is what you lea
 * Ember services vs. global variables
 * Mocking services in tests
 
-<h3><a href="../ember-data/">Chapter 11</a></h3>
+<h3><a href="../warp-drive/">Chapter 11</a></h3>
 
-* WarpDrive schemas and derived fields
-* Testing schemas
+* WarpDrive schemas
+* Sharing logic with plain functions
+* Unit testing plain functions
+* Request builders
 * Loading records in routes
 * The WarpDrive store
-* Working with request builders and handlers
 
 <h3><a href="../provider-components/">Chapter 12</a></h3>
 

@@ -1,3 +1,3 @@
 ---
-redirect: tutorial/part-2/ember-data/
+redirect: tutorial/part-2/warp-drive/
 ---
