@@ -108,14 +108,14 @@ git add app/services/store.js
 git add package.json
 ```
 
-## Sharing the Rental Type Logic
+## Sharing the Rental Category Logic
 
-Our schema does not have a `type` field. The server does not send one: our routes compute it from the `category` of each rental. That logic is not part of the data, so it does not belong in the schema. Instead, let's move it into a plain function that any part of our app can import:
+Our routes also put each rental into one of two groups, Community or Standalone, based on its `category`. The server does not send this value, so it does not belong in our schema. Instead, let's move that logic into a plain function that any part of our app can import:
 
-```run:file:create lang=js cwd=super-rentals filename=app/utils/rental-type.js
+```run:file:create lang=js cwd=super-rentals filename=app/utils/rental-category.js
 const COMMUNITY_CATEGORIES = ['Condo', 'Townhouse', 'Apartment'];
 
-export function rentalType(rental) {
+export function rentalCategory(rental) {
   if (COMMUNITY_CATEGORIES.includes(rental.category)) {
     return 'Community';
   } else {
@@ -124,33 +124,33 @@ export function rentalType(rental) {
 }
 ```
 
-Our components can call this function in their templates. In Ember, a plain function works as a *[helper](../../../components/helper-functions/)*, so `{{rentalType @rental}}` calls `rentalType` with the rental and renders the result. Let's use it in both of our rental components:
+Our components can call this function in their templates. In Ember, a plain function works as a *[helper](../../../components/helper-functions/)*, so `{{rentalCategory @rental}}` calls `rentalCategory` with the rental and renders the result. Let's use it in both of our rental components:
 
 ```run:file:patch lang=gjs cwd=super-rentals filename=app/components/rental.gjs
 @@ -3,2 +3,3 @@ import Map from 'super-rentals/components/map';
  import { LinkTo } from '@ember/routing';
-+import { rentalType } from 'super-rentals/utils/rental-type';
++import { rentalCategory } from 'super-rentals/utils/rental-category';
  
 @@ -20,3 +21,3 @@ import { LinkTo } from '@ember/routing';
        <div class="detail type">
 -        <span>Type:</span> {{@rental.type}}
-+        <span>Type:</span> {{rentalType @rental}}
++        <span>Type:</span> {{rentalCategory @rental}}
        </div>
 ```
 
 ```run:file:patch lang=gjs cwd=super-rentals filename=app/components/rental/detailed.gjs
 @@ -4,2 +4,3 @@ import Map from 'super-rentals/components/map';
  import ShareButton from 'super-rentals/components/share-button';
-+import { rentalType } from 'super-rentals/utils/rental-type';
++import { rentalCategory } from 'super-rentals/utils/rental-category';
  
 @@ -31,3 +32,3 @@ import ShareButton from 'super-rentals/components/share-button';
        <div class="detail type">
 -        <span>Type:</span> {{@rental.type}} – {{@rental.category}}
-+        <span>Type:</span> {{rentalType @rental}} – {{@rental.category}}
++        <span>Type:</span> {{rentalCategory @rental}} – {{@rental.category}}
        </div>
 ```
 
-The components now compute the type themselves, so the rental data in our component tests does not need a `type` anymore:
+The components now compute this value themselves, so the rental data in our component tests does not need a `type` anymore:
 
 ```run:file:patch lang=gjs cwd=super-rentals filename=tests/integration/components/rental-test.gjs
 @@ -21,3 +21,2 @@ module('Integration | Component | rental', function (hooks) {
@@ -168,34 +168,34 @@ The components now compute the type themselves, so the rental data in our compon
 
 ## Unit Testing Plain Functions
 
-So far, we haven't had a good place to write tests for the rental property's `type` logic. Now that it lives in its own function, it is easy to test this behavior. Let's create a test file for it:
+So far, we haven't had a good place to write tests for this logic. Now that it lives in its own function, it is easy to test this behavior. Let's create a test file for it:
 
-```run:file:create lang=js cwd=super-rentals filename=tests/unit/utils/rental-type-test.js
-import { rentalType } from 'super-rentals/utils/rental-type';
+```run:file:create lang=js cwd=super-rentals filename=tests/unit/utils/rental-category-test.js
+import { rentalCategory } from 'super-rentals/utils/rental-category';
 import { module, test } from 'qunit';
 
-module('Unit | Utility | rental-type', function () {
-  test('it computes the type from the category', function (assert) {
-    assert.strictEqual(rentalType({ category: 'Estate' }), 'Standalone');
-    assert.strictEqual(rentalType({ category: 'Condo' }), 'Community');
-    assert.strictEqual(rentalType({ category: 'Townhouse' }), 'Community');
-    assert.strictEqual(rentalType({ category: 'Apartment' }), 'Community');
+module('Unit | Utility | rental-category', function () {
+  test('it groups rentals by their category', function (assert) {
+    assert.strictEqual(rentalCategory({ category: 'Estate' }), 'Standalone');
+    assert.strictEqual(rentalCategory({ category: 'Condo' }), 'Community');
+    assert.strictEqual(rentalCategory({ category: 'Townhouse' }), 'Community');
+    assert.strictEqual(rentalCategory({ category: 'Apartment' }), 'Community');
   });
 });
 ```
 
-This test is also known as a *[unit test](../../../testing/unit-testing-basics/)*. Unlike any of the other tests that we've written thus far, this test doesn't actually *render* anything. It calls our function with a few rentals and checks the result. Because `rentalType` is a plain function, the test does not need the store, or even a running app. Any object with a `category` works.
+This test is also known as a *[unit test](../../../testing/unit-testing-basics/)*. Unlike any of the other tests that we've written thus far, this test doesn't actually *render* anything. It calls our function with a few rentals and checks the result. Because `rentalCategory` is a plain function, the test does not need the store, or even a running app. Any object with a `category` works.
 
 Running the tests in the browser confirms that everything is working as intended:
 
 ```run:command hidden=true cwd=super-rentals
 pnpm test
-git add app/utils/rental-type.js
+git add app/utils/rental-category.js
 git add app/components/rental.gjs
 git add app/components/rental/detailed.gjs
 git add tests/integration/components/rental-test.gjs
 git add tests/integration/components/rental/detailed-test.gjs
-git add tests/unit/utils/rental-type-test.js
+git add tests/unit/utils/rental-category-test.js
 ```
 
 ```run:screenshot width=1024 height=1024 retina=true filename=pass-1.png alt="All the tests pass!"
